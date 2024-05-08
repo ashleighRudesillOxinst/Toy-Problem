@@ -85,3 +85,17 @@ def stateToAbbrev(state):
 
 def checkIfState(state):
     return state in us_state_to_abbrev
+
+def abbrevToStateDash(abbrevs):
+    split = abbrevs.split('-')
+    for i in range(len(split)):
+        try:
+            split[i]=abbrevToState(split[i])
+        except:
+            split.pop(i)
+    try:
+        final = '-'.join(split)
+    except:
+        final = split[0]
+    return final
+    
