@@ -38,7 +38,7 @@ df2 = pd.read_csv('C:/Users/ashleigh.rudesill/Downloads/2023.q1-q3 31-33 NAICS 3
 # ========================================================
 # df2 column names:
 
-#     area_fips    city    state    month1_emplvl    month2_emplvl    month3_emplvl    lq_qtrly_estabs_cout
+#     area_fips    city    state    month1_emplvl    month2_emplvl    month3_emplvl    lq_qtrly_estabs_count
 #     lq_month1_emplvl    lq_month2_emplvl    lq_month3_emplvl   lq_total_qtrly_wages
 # ========================================================
 '''
@@ -80,21 +80,28 @@ def getOgData(row):
     return [state,city]
 
 def confirmBoth(city,state):
-    tempDf = df2[df2['state'].str.lower().str.contains(str(state))]
+    values = [0, 0, 0, 0, 0, 0, 0, 0]
+    valuesNum= 0
     try:
-        
+        tempDf = df2[df2['state'].str.lower().str.contains(str(state))]
+        valuesString = ['month1_emplvl', 'month2_emplvl', 'month3_emplvl', 'lq_qtrly_estabs_count', 'lq_month1_emplvl', 'lq_month2_emplvl', 'lq_month3_emplvl', 'lq_total_qtrly_wages']
         dfLen = len(tempDf)
-        retVal = False
         for index,row in tempDf.iterrows():
             if( city in (row['city'].lower())):
+                for i in range(len(values)):
+                    values[i] = values[i] + row[valuesString[i]]
+                valuesNum = valuesNum + 1
                 
-                ''' add together data and add plus one to the count so it can be divided at the end'''
+        for i in range(len(values)):
+            values[i] = values[i]/valuesNum
+                
+        ''' add together data and add plus one to the count so it can be divided at the end'''
             #if(tempDf[i][1].str.lower().str.contains(city)==True):
         #        i = dfLen+1
         retVal = True
     except:
-        retVal = False
-    return retVal
+        values
+    return values
 
 x=getOgData(600)
 #print(confirmBoth(x[1], x[0]))
