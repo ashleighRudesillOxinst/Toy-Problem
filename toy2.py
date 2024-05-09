@@ -72,6 +72,7 @@ cleanOzPM25 = cleanOzone#[pd.to_numeric(cleanOzone['PM25'], errors='coerce').not
 cleanOzPM25['Ozone'] = cleanOzPM25.Ozone.apply(pd.to_numeric, errors = 'coerce')
 cleanOzPM25['PM25'] = cleanOzPM25.PM25.apply(pd.to_numeric, errors = 'coerce')
 
+unique = cleanOzPM25[['city', 'state']].drop_duplicates().reset_index(drop=True)
 
 #define a function to get the city and state from first dataframe
 def getOgData(row):
@@ -79,15 +80,32 @@ def getOgData(row):
     city = cleanOzPM25.iloc[row,13].strip().lower()
     return [state,city]
 
-def confirmBoth(city,state):
+#defines a function that given a city and state name returns if it is in the second dataset, and the average of the numeric columns for that city
+def retSecVals(city,state):
+    retVal = False
     values = [0, 0, 0, 0, 0, 0, 0, 0]
-    valuesNum= 0
+    means = []
     try:
-        tempDf = df2[df2['state'].str.lower().str.contains(str(state))]
+        tempDf = df2[df2['state'].str.lower().str.contains(str(state.lower()))]
+        print(len(tempDf))
+        tempDf = tempDf[tempDf['city'].str.lower().str.contains(str(city.lower()))]
+        print(len(tempDf))
+        print(tempDf['month1_emplvl'].mean())
         valuesString = ['month1_emplvl', 'month2_emplvl', 'month3_emplvl', 'lq_qtrly_estabs_count', 'lq_month1_emplvl', 'lq_month2_emplvl', 'lq_month3_emplvl', 'lq_total_qtrly_wages']
-        dfLen = len(tempDf)
+        for values in valuesString:
+            means.append(tempDf[values].mean())
+        retVal = True
+    except:
+        means = None
+    return [retVal, means]
+"""  unnecessarily processing heavy
+    #try getting average of each numeric column for any/all columns matching the city/state
+    try:
+        tempDf = df2[df2['state'].str.lower().str.contains(str(state.lower()))]
+        valuesString = ['month1_emplvl', 'month2_emplvl', 'month3_emplvl', 'lq_qtrly_estabs_count', 'lq_month1_emplvl', 'lq_month2_emplvl', 'lq_month3_emplvl', 'lq_total_qtrly_wages']
         for index,row in tempDf.iterrows():
-            if( city in (row['city'].lower())):
+            if( city.lower() in (row['city'].lower())):
+                retVal = True
                 for i in range(len(values)):
                     values[i] = values[i] + row[valuesString[i]]
                 valuesNum = valuesNum + 1
@@ -101,13 +119,21 @@ def confirmBoth(city,state):
         retVal = True
     except:
         values
-    return values
+    return [retVal, values]
+"""
+
+
+
+#define a function that given a city and state name returns the average Ozone and PM25 measurements of all those readings
+def retFirstVals(city, state):
+    print(state)
+
 
 x=getOgData(600)
-#print(confirmBoth(x[1], x[0]))
+#print(retSecVals(x[1], x[0]))
 
 # print(df2.state)
-y = confirmBoth('dallas','texas')
+y = retSecVals('Dallas','texas')
 
 
 #pick a state and project out a map with pollution levels by county
