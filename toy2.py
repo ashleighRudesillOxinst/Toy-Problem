@@ -7,10 +7,10 @@ Created on Tue May  7 11:59:54 2024
 
 #import libraries
 import pandas as pd
-#import plotly.express as px
-#import plotly.graph_objects as go
-#import plotly.io as pio
-#pio.renderers.default='browser'
+import plotly.express as px
+import plotly.graph_objects as go
+import plotly.io as pio
+pio.renderers.default='browser'
 
 #import sklearn
 #import sklearn.cluster as cluster
@@ -73,6 +73,7 @@ cleanOzPM25['Ozone'] = cleanOzPM25.Ozone.apply(pd.to_numeric, errors = 'coerce')
 cleanOzPM25['PM25'] = cleanOzPM25.PM25.apply(pd.to_numeric, errors = 'coerce')
 
 unique = cleanOzPM25[['city', 'state']].drop_duplicates().reset_index(drop=True)
+uniqueList = unique.values.tolist()
 
 #define a function to get the city and state from first dataframe
 def getOgData(row):
@@ -97,6 +98,7 @@ def retSecVals(city,state):
         retVal = True
     except:
         means = None
+        
     return [retVal, means]
 """  unnecessarily processing heavy
     #try getting average of each numeric column for any/all columns matching the city/state
@@ -125,8 +127,11 @@ def retSecVals(city,state):
 
 
 #define a function that given a city and state name returns the average Ozone and PM25 measurements of all those readings
-def retFirstVals(city, state):
-    print(state)
+def retFirstVals(city, stateAbbrev):
+    tempDf = cleanOzPM25[cleanOzPM25['state'].str.lower().str.contains(str(stateAbbrev.lower()))]
+    tempDf = tempDf[tempDf['city'].str.lower().str.contains(str(city.lower()))]
+    values = [tempDf['Ozone'].mean(), tempDf['PM25'].mean()]
+    return values
 
 
 x=getOgData(600)
@@ -134,7 +139,49 @@ x=getOgData(600)
 
 # print(df2.state)
 y = retSecVals('Dallas','texas')
-
+z = retFirstVals('Dallas','TX')
 
 #pick a state and project out a map with pollution levels by county
 #short couple hundred word report on what ive done by firday
+
+
+def newDataFrame(uniqueList):
+    totalList = []
+    for unique in uniqueList:
+        city = unique[0]
+        stateAbbrev = unique[1]
+        state = abbrevToState(stateAbbrev)
+        second = retSecVals(city, state)
+        allVals = list
+        if(second[0]==True):
+            first = retFirstVals(city, stateAbbrev)
+            allVals = second[1]
+            allVals.append(first[0])
+            allVals.append(first[1])
+            allVals.append(city)
+            allVals.append(state)
+            totalList.append(allVals)
+    return totalList
+"""
+
+def function
+does unique-
+
+for all in unique-
+get values from first and second dfs
+combine into one slice
+append to new dataframe
+
+
+
+"""
+newDfList = newDataFrame(uniqueList)
+columns = ['month1_emplvl', 'month2_emplvl', 'month3_emplvl', 'lq_qtrly_estabs_count', 'lq_month1_emplvl', 'lq_month2_emplvl', 'lq_month3_emplvl', 'lq_total_qtrly_wages','Ozone', 'PM25','City', 'State']
+newDf = pd.DataFrame(newDfList,columns=columns)
+
+newDfOzone = newDf.drop('PM25',axis = 1)
+newDfOzone = newDfOzone.dropna()
+
+
+fig1 = px.scatter(newDfOzone, x = "City", y = newDfOzone.columns[7:9])
+pio.show(fig1)
