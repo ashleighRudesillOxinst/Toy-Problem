@@ -19,6 +19,7 @@ pio.renderers.default='browser'
 #import numpy as np
 
 
+
 #import state functions
 from us_state_abbrev import abbrevToState, checkIfState, abbrevToStateDash
 
@@ -141,9 +142,6 @@ x=getOgData(600)
 y = retSecVals('Dallas','texas')
 z = retFirstVals('Dallas','TX')
 
-#pick a state and project out a map with pollution levels by county
-#short couple hundred word report on what ive done by firday
-
 
 def newDataFrame(uniqueList):
     totalList = []
@@ -176,12 +174,16 @@ append to new dataframe
 
 """
 newDfList = newDataFrame(uniqueList)
-columns = ['month1_emplvl', 'month2_emplvl', 'month3_emplvl', 'lq_qtrly_estabs_count', 'lq_month1_emplvl', 'lq_month2_emplvl', 'lq_month3_emplvl', 'lq_total_qtrly_wages','Ozone', 'PM25','City', 'State']
+columns = ['month1_emplvl', 'month2_emplvl', 'month3_emplvl', 'lq_qtrly_estabs_count', 'lq_month1_emplvl', 'lq_month2_emplvl', 
+          'lq_month3_emplvl', 'lq_total_qtrly_wages','Ozone', 'PM25','City', 'State']
 newDf = pd.DataFrame(newDfList,columns=columns)
 
 newDfOzone = newDf.drop('PM25',axis = 1)
 newDfOzone = newDfOzone.dropna()
 
+x = newDfOzone.drop('City',axis=1).drop('State',axis=1).corr()
+
+newDfOzone=newDfOzone.sort_values(['Ozone'])
 
 fig1 = px.scatter(newDfOzone, x = "City", y = newDfOzone.columns[7:9])
 pio.show(fig1)
