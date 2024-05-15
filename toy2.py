@@ -19,7 +19,6 @@ pio.renderers.default='browser'
 #import numpy as np
 
 
-
 #import state functions
 from us_state_abbrev import abbrevToState, checkIfState, abbrevToStateDash
 
@@ -134,14 +133,14 @@ def retFirstVals(city, stateAbbrev):
     values = [tempDf['Ozone'].mean(), tempDf['PM25'].mean()]
     return values
 
-
+'''
 x=getOgData(600)
 #print(retSecVals(x[1], x[0]))
 
 # print(df2.state)
 y = retSecVals('Dallas','texas')
 z = retFirstVals('Dallas','TX')
-
+'''
 
 def newDataFrame(uniqueList):
     totalList = []
@@ -160,6 +159,7 @@ def newDataFrame(uniqueList):
             allVals.append(state)
             totalList.append(allVals)
     return totalList
+
 """
 
 def function
@@ -181,9 +181,21 @@ newDf = pd.DataFrame(newDfList,columns=columns)
 newDfOzone = newDf.drop('PM25',axis = 1)
 newDfOzone = newDfOzone.dropna()
 
+newDfPM = newDf.drop('Ozone', axis = 1)
+newDfPM = newDfPM.dropna()
+
 x = newDfOzone.drop('City',axis=1).drop('State',axis=1).corr()
+x1 = newDfPM.drop('City',axis=1).drop('State',axis=1).corr()
 
 newDfOzone=newDfOzone.sort_values(['Ozone'])
+newDfPM=newDfPM.sort_values(['PM25'])
 
 fig1 = px.scatter(newDfOzone, x = "City", y = newDfOzone.columns[7:9])
 pio.show(fig1)
+
+
+fig2  = px.scatter(newDfOzone, x = 'Ozone', y = newDfOzone.columns[6:9])
+pio.show(fig2)
+
+fig3 = px.scatter(newDfPM, x = "City", y = newDfPM.columns[7:9])
+pio.show(fig3)
