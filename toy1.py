@@ -67,13 +67,13 @@ chic1.add_trace(go.Scatter( x = chicago['Date'],y= chicago['PM25'], mode='marker
 #pio.show(chic1)
 
 chicago = chicago.sort_values('Site Name (of Overall AQI)',ascending = True)
-chic2Oz = px.scatter(chicago, x = 'Site Name (of Overall AQI)', y = 'Ozone')
-chic2PM = px.scatter(chicago, x = 'Site Name (of Overall AQI)', y = 'PM25', color_discrete_sequence=['red'])
-chic2PM.update_traces(marker = dict(symbol="diamond"))
-chic2 = go.Figure(data = chic2Oz.data+chic2PM.data)
-chic2.update_layout(title = go.layout.Title(text = 'Chicago Ozone and PM25 Measurements by Location'), xaxis=go.layout.XAxis(title=go.layout.xaxis.Title(text='Locations')))
-chic2.update_layout(showlegend=True)
-pio.show(chic2)
+chic2Oz = px.scatter(chicago, x = 'Site Name (of Overall AQI)', y = chicago.columns[7:9])
+#chic2PM = px.scatter(chicago, x = 'Site Name (of Overall AQI)', y = 'PM25', color_discrete_sequence=['red'])
+#chic2PM.update_traces(marker = dict(symbol="diamond"))
+#chic2 = go.Figure(data = chic2Oz.data+chic2PM.data)
+chic2Oz.update_layout(title = go.layout.Title(text = 'Chicago Ozone and PM2.5 Measurements by Location'), xaxis=go.layout.XAxis(title=go.layout.xaxis.Title(text='Locations')), yaxis=go.layout.YAxis(title=go.layout.yaxis.Title(text='(μg/m^3)')))
+chic2Oz.update_layout(showlegend=True)
+pio.show(chic2Oz)
 
 # chicagoDF = chicago.iloc[:,[0,7]]
 # kmeans = cluster.KMeans(n_clusters=3)
